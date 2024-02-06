@@ -1,0 +1,33 @@
+name: 'build'
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+  schedule:
+    - cron:  '0 0 * * 0'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: validate
+        run: make validate
+
+      - name: test
+        run: make test
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SKIP_logs: true
