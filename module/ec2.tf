@@ -3,7 +3,6 @@ resource "aws_security_group" "ingress" {
   #checkov:skip=CKV2_AWS_5:Broken - https://github.com/bridgecrewio/checkov/issues/1203
   name        = "${local.name}-ingress"
   description = "Security group allowing inbound traffic to the Sunkenland server"
-  tags        = local.tags
 }
 
 resource "aws_security_group_rule" "sunkenland_ingress" {
@@ -53,8 +52,8 @@ resource "aws_spot_instance_request" "sunkenland" {
   instance_type = var.instance_type
   ebs_optimized = true
   user_data = templatefile("${path.module}/local/userdata.sh", {
-    username = local.username
-    bucket   = aws_s3_bucket.sunkenland.id
+    host_username = local.host_username
+    bucket        = aws_s3_bucket.sunkenland.id
   })
   iam_instance_profile           = aws_iam_instance_profile.sunkenland.name
   vpc_security_group_ids         = [aws_security_group.ingress.id]
@@ -71,15 +70,8 @@ resource "aws_spot_instance_request" "sunkenland" {
     aws_s3_object.start_sunkenland,
     aws_s3_object.backup_sunkenland,
     aws_s3_object.crontab,
-    aws_s3_object.sunkenland_service,
-    aws_s3_object.admin_list,
-    aws_s3_object.update_cname_json[0],
-    aws_s3_object.update_cname[0]
+    aws_s3_object.sunkenland_service
   ]
-}
-
-output "instance_id" {
-  value = aws_spot_instance_request.sunkenland.spot_instance_id
 }
 
 resource "aws_ec2_tag" "sunkenland" {

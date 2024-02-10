@@ -31,6 +31,16 @@ variable "sns_email" {
   description = "The email address to send alerts to"
 }
 
+variable "steam_password_secret_path" {
+  type        = string
+  description = "The AWS Secrets Manager path to the Steam username password"
+}
+
+variable "steam_username" {
+  type        = string
+  description = "The Steam username used to auth and download Sunkenland from Steam"
+}
+
 variable "unique_id" {
   type        = string
   default     = ""

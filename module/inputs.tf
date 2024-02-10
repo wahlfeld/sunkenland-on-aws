@@ -1,8 +1,11 @@
 locals {
-  username = "vhserver"
+  host_username  = "slserver"
+  name           = var.purpose != "prod" ? "sunkenland-${var.purpose}${var.unique_id}" : "sunkenland"
+  steam_app_id   = "2667530"
+  steam_password = sensitive(data.aws_secretsmanager_secret_version.steam_password.secret_string)
   tags = {
     "Purpose"   = var.purpose
-    "Component" = "sunkenland Server"
+    "Component" = "Sunkenland Server"
     "CreatedBy" = "Terraform"
   }
   ec2_tags = merge(local.tags,
@@ -11,7 +14,6 @@ locals {
       "Description" = "Instance running a Sunkenland server"
     }
   )
-  name       = var.purpose != "prod" ? "sunkenland-${var.purpose}${var.unique_id}" : "sunkenland"
 }
 
 variable "aws_region" {
@@ -35,6 +37,14 @@ variable "server_password" {
 }
 
 variable "sns_email" {
+  type = string
+}
+
+variable "steam_password_secret_path" {
+  type = string
+}
+
+variable "steam_username" {
   type = string
 }
 

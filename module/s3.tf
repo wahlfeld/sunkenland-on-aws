@@ -5,7 +5,6 @@ resource "aws_s3_bucket" "sunkenland" {
   #checkov:skip=CKV_AWS_52:MFA delete is unecessary for this implementation
   #checkov:skip=CKV2_AWS_62:Event notifications are unecessary for this implementation
   bucket_prefix = local.name
-  tags          = local.tags
 }
 
 resource "aws_s3_bucket_versioning" "sunkenland" {
@@ -85,10 +84,15 @@ resource "aws_s3_bucket_public_access_block" "sunkenland" {
 
 resource "aws_s3_object" "install_sunkenland" {
   #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
-  bucket         = aws_s3_bucket.sunkenland.id
-  key            = "/install_sunkenland.sh"
-  content_base64 = base64encode(templatefile("${path.module}/local/install_sunkenland.sh", { username = local.username }))
-  etag           = filemd5("${path.module}/local/install_sunkenland.sh")
+  bucket = aws_s3_bucket.sunkenland.id
+  key    = "/install_sunkenland.sh"
+  content_base64 = base64encode(templatefile("${path.module}/local/install_sunkenland.sh", {
+    host_username  = local.host_username
+    steam_app_id   = local.steam_app_id
+    steam_username = var.steam_username
+    steam_password = local.steam_password
+  }))
+  etag = filemd5("${path.module}/local/install_sunkenland.sh")
 }
 
 resource "aws_s3_object" "bootstrap_sunkenland" {
@@ -96,8 +100,8 @@ resource "aws_s3_object" "bootstrap_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/bootstrap_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/bootstrap_sunkenland.sh", {
-    username = local.username
-    bucket   = aws_s3_bucket.sunkenland.id
+    host_username = local.host_username
+    bucket        = aws_s3_bucket.sunkenland.id
   }))
   etag = filemd5("${path.module}/local/bootstrap_sunkenland.sh")
 }
@@ -107,9 +111,10 @@ resource "aws_s3_object" "start_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/start_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/start_sunkenland.sh", {
-    username        = local.username
+    host_username   = local.host_username
     bucket          = aws_s3_bucket.sunkenland.id
     world_name      = var.world_name
+    steam_app_id    = local.steam_app_id
     server_password = var.server_password
   }))
   etag = filemd5("${path.module}/local/start_sunkenland.sh")
@@ -120,19 +125,21 @@ resource "aws_s3_object" "backup_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/backup_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/backup_sunkenland.sh", {
-    username   = local.username
-    bucket     = aws_s3_bucket.sunkenland.id
-    world_name = var.world_name
+    host_username = local.host_username
+    bucket        = aws_s3_bucket.sunkenland.id
+    world_name    = var.world_name
   }))
   etag = filemd5("${path.module}/local/backup_sunkenland.sh")
 }
 
 resource "aws_s3_object" "crontab" {
   #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
-  bucket         = aws_s3_bucket.sunkenland.id
-  key            = "/crontab"
-  content_base64 = base64encode(templatefile("${path.module}/local/crontab", { username = local.username }))
-  etag           = filemd5("${path.module}/local/crontab")
+  bucket = aws_s3_bucket.sunkenland.id
+  key    = "/crontab"
+  content_base64 = base64encode(templatefile("${path.module}/local/crontab", {
+    host_username = local.host_username
+  }))
+  etag = filemd5("${path.module}/local/crontab")
 }
 
 resource "aws_s3_object" "sunkenland_service" {
@@ -140,11 +147,10 @@ resource "aws_s3_object" "sunkenland_service" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/sunkenland.service"
   content_base64 = base64encode(templatefile("${path.module}/local/sunkenland.service", {
-    username = local.username
+    host_username  = local.host_username
+    steam_app_id   = local.steam_app_id
+    steam_username = var.steam_username
+    steam_password = local.steam_password
   }))
   etag = filemd5("${path.module}/local/sunkenland.service")
-}
-
-output "bucket_id" {
-  value = aws_s3_bucket.sunkenland.id
 }

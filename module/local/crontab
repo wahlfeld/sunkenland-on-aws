@@ -1,2 +1,2 @@
-@reboot sleep 300 && /home/${username}/sunkenland/backup_sunkenland.sh >> /home/${username}/sunkenland/backup.log 2>&1
-@hourly /home/${username}/sunkenland/backup_sunkenland.sh >> /home/${username}/sunkenland/backup.log 2>&1
+@reboot sleep 300 && /home/${host_username}/sunkenland/backup_sunkenland.sh >> /home/${host_username}/sunkenland/backup.log 2>&1
+@hourly /home/${host_username}/sunkenland/backup_sunkenland.sh >> /home/${host_username}/sunkenland/backup.log 2>&1

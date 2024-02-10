@@ -12,8 +12,3 @@ output "instance_id" {
   value       = module.main.instance_id
   description = "The EC2 instance ID"
 }
-
-output "sunkenland_user_passwords" {
-  value       = module.main.sunkenland_user_passwords
-  description = "List of AWS users and their encrypted passwords"
-}

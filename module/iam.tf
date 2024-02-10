@@ -13,7 +13,6 @@ resource "aws_iam_role" "sunkenland" {
       }
     ]
   })
-  tags = local.tags
 }
 
 resource "aws_iam_instance_profile" "sunkenland" {

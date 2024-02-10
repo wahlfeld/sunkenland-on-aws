@@ -17,23 +17,23 @@ cd /tmp
 curl -s https://my-netdata.io/kickstart-static64.sh > kickstart-static64.sh
 bash kickstart-static64.sh --dont-wait
 
-useradd -m ${username}
-su - ${username} -c "mkdir -p /home/${username}/sunkenland"
+useradd -m ${host_username}
+su - ${host_username} -c "mkdir -p /home/${host_username}/sunkenland"
 
-aws s3 cp s3://${bucket}/install_sunkenland.sh /home/${username}/sunkenland/install_sunkenland.sh
-aws s3 cp s3://${bucket}/bootstrap_sunkenland.sh /home/${username}/sunkenland/bootstrap_sunkenland.sh
-aws s3 cp s3://${bucket}/sunkenland.service /home/${username}/sunkenland/sunkenland.service
+aws s3 cp s3://${bucket}/install_sunkenland.sh /home/${host_username}/sunkenland/install_sunkenland.sh
+aws s3 cp s3://${bucket}/bootstrap_sunkenland.sh /home/${host_username}/sunkenland/bootstrap_sunkenland.sh
+aws s3 cp s3://${bucket}/sunkenland.service /home/${host_username}/sunkenland/sunkenland.service
 
-chmod +x /home/${username}/sunkenland/install_sunkenland.sh
-chmod +x /home/${username}/sunkenland/bootstrap_sunkenland.sh
+chmod +x /home/${host_username}/sunkenland/install_sunkenland.sh
+chmod +x /home/${host_username}/sunkenland/bootstrap_sunkenland.sh
 
-chown ${username}:${username} /home/${username}/sunkenland/install_sunkenland.sh
-chown ${username}:${username} /home/${username}/sunkenland/bootstrap_sunkenland.sh
-chown ${username}:${username} /home/${username}/sunkenland/sunkenland.service
+chown ${host_username}:${host_username} /home/${host_username}/sunkenland/install_sunkenland.sh
+chown ${host_username}:${host_username} /home/${host_username}/sunkenland/bootstrap_sunkenland.sh
+chown ${host_username}:${host_username} /home/${host_username}/sunkenland/sunkenland.service
 
-cp /home/${username}/sunkenland/sunkenland.service /etc/systemd/system
+cp /home/${host_username}/sunkenland/sunkenland.service /etc/systemd/system
 
-su - ${username} -c "bash /home/${username}/sunkenland/install_sunkenland.sh"
+su - ${host_username} -c "bash /home/${host_username}/sunkenland/install_sunkenland.sh"
 
 systemctl daemon-reload
 systemctl enable sunkenland.service

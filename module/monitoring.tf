@@ -2,7 +2,6 @@
 resource "aws_sns_topic" "sunkenland" {
   #checkov:skip=CKV_AWS_26:CloudWatch can't publish messages to encrypted topics - https://aws.amazon.com/premiumsupport/knowledge-center/cloudwatch-receive-sns-for-alarm-trigger/
   name = "${local.name}-status"
-  tags = local.tags
 }
 
 resource "aws_sns_topic_subscription" "sunkenland" {
@@ -29,7 +28,6 @@ resource "aws_cloudwatch_metric_alarm" "sunkenland_stopped" {
     "arn:aws:swf:${var.aws_region}:${data.aws_caller_identity.current.account_id}:action/actions/AWS_EC2.InstanceId.Stop/1.0",
   ]
   dimensions = { "InstanceId" = aws_spot_instance_request.sunkenland.spot_instance_id }
-  tags       = local.tags
 }
 
 resource "aws_cloudwatch_event_rule" "sunkenland_started" {
@@ -43,7 +41,6 @@ resource "aws_cloudwatch_event_rule" "sunkenland_started" {
       "instance-id" : [aws_spot_instance_request.sunkenland.spot_instance_id]
     }
   })
-  tags = local.tags
 }
 
 resource "aws_cloudwatch_event_target" "sunkenland_started" {
@@ -60,8 +57,4 @@ resource "aws_cloudwatch_event_target" "sunkenland_started" {
     }
     input_template = "\"At <time>, the status of your EC2 instance <instance-id> on account <account> in the AWS Region <region> has changed to <state>.\""
   }
-}
-
-output "monitoring_url" {
-  value = format("%s%s%s", "http://", aws_spot_instance_request.sunkenland.public_dns, ":19999")
 }
