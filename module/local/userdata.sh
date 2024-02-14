@@ -1,17 +1,21 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 dpkg --add-architecture i386
 apt update
 apt install -y \
     awscli \
     ca-certificates \
+    cabextract \
     jq \
     lib32gcc1 \
     lib32stdc++6 \
+    libcurl4-openssl-dev:i386 \
     libjson-c-dev \
     libsdl2-2.0-0:i386 \
     libtool \
+    wine \
+    xvfb \
 
 cd /tmp
 curl -s https://my-netdata.io/kickstart-static64.sh > kickstart-static64.sh

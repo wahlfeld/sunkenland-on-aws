@@ -7,8 +7,8 @@ resource "aws_security_group" "ingress" {
 
 resource "aws_security_group_rule" "sunkenland_ingress" {
   type              = "ingress"
-  from_port         = 2456
-  to_port           = 2458
+  from_port         = 27015
+  to_port           = 27015
   protocol          = "udp"
   cidr_blocks       = ["0.0.0.0/0"] #tfsec:ignore:aws-vpc-no-public-ingress-sgr
   security_group_id = aws_security_group.ingress.id
@@ -66,6 +66,7 @@ resource "aws_spot_instance_request" "sunkenland" {
   tags = local.ec2_tags
 
   depends_on = [
+    aws_s3_bucket_policy.sunkenland,
     aws_s3_object.install_sunkenland,
     aws_s3_object.start_sunkenland,
     aws_s3_object.backup_sunkenland,

@@ -130,7 +130,7 @@ func TestTerraform(t *testing.T) {
 		// Make sure SSM is ready before trying to connect
 		taws.WaitForSsmInstance(t, region, instanceID, 3*time.Minute)
 
-		err := checksunkenlandIsRunning(t, region, instanceID)
+		err := checkSunkenlandIsRunning(t, region, instanceID)
 		require.NoError(t, err, "sunkenland is not running. Error: %v", err)
 	})
 
@@ -205,7 +205,7 @@ func TestTerraform(t *testing.T) {
 		_, err = sunkenlandService(t, region, instanceID, "start")
 		require.NoError(t, err)
 
-		err = checksunkenlandIsRunning(t, region, instanceID)
+		err = checkSunkenlandIsRunning(t, region, instanceID)
 		require.NoError(t, err, "sunkenland is not running")
 
 		_, err = retry.DoWithRetryE(t, "Checking if backups were restored from S3", 2, 60*time.Second, func() (string, error) {

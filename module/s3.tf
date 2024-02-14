@@ -87,10 +87,8 @@ resource "aws_s3_object" "install_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/install_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/install_sunkenland.sh", {
-    host_username  = local.host_username
-    steam_app_id   = local.steam_app_id
-    steam_username = var.steam_username
-    steam_password = local.steam_password
+    host_username = local.host_username
+    steam_app_id  = local.steam_app_id
   }))
   etag = filemd5("${path.module}/local/install_sunkenland.sh")
 }
@@ -113,9 +111,10 @@ resource "aws_s3_object" "start_sunkenland" {
   content_base64 = base64encode(templatefile("${path.module}/local/start_sunkenland.sh", {
     host_username   = local.host_username
     bucket          = aws_s3_bucket.sunkenland.id
-    world_name      = var.world_name
+    world_guid      = var.world_guid
     steam_app_id    = local.steam_app_id
     server_password = var.server_password
+    server_region   = var.server_region
   }))
   etag = filemd5("${path.module}/local/start_sunkenland.sh")
 }
@@ -127,7 +126,7 @@ resource "aws_s3_object" "backup_sunkenland" {
   content_base64 = base64encode(templatefile("${path.module}/local/backup_sunkenland.sh", {
     host_username = local.host_username
     bucket        = aws_s3_bucket.sunkenland.id
-    world_name    = var.world_name
+    world_guid    = var.world_guid
   }))
   etag = filemd5("${path.module}/local/backup_sunkenland.sh")
 }
@@ -147,10 +146,8 @@ resource "aws_s3_object" "sunkenland_service" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/sunkenland.service"
   content_base64 = base64encode(templatefile("${path.module}/local/sunkenland.service", {
-    host_username  = local.host_username
-    steam_app_id   = local.steam_app_id
-    steam_username = var.steam_username
-    steam_password = local.steam_password
+    host_username = local.host_username
+    steam_app_id  = local.steam_app_id
   }))
   etag = filemd5("${path.module}/local/sunkenland.service")
 }

@@ -26,19 +26,14 @@ variable "server_password" {
   description = "The server password"
 }
 
+variable "server_region" {
+  type        = string
+  description = "The region to host the Sunkenland server"
+}
+
 variable "sns_email" {
   type        = string
   description = "The email address to send alerts to"
-}
-
-variable "steam_password_secret_path" {
-  type        = string
-  description = "The AWS Secrets Manager path to the Steam username password"
-}
-
-variable "steam_username" {
-  type        = string
-  description = "The Steam username used to auth and download Sunkenland from Steam"
 }
 
 variable "unique_id" {
@@ -47,7 +42,7 @@ variable "unique_id" {
   description = "The ID of the deployment (used for tests)"
 }
 
-variable "world_name" {
+variable "world_guid" {
   type        = string
-  description = "The Sunkenland world name"
+  description = "The Sunkenland world name GUID"
 }
