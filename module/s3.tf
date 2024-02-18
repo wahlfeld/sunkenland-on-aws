@@ -87,6 +87,7 @@ resource "aws_s3_object" "install_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/install_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/install_sunkenland.sh", {
+    game_dir      = local.game_dir
     host_username = local.host_username
     steam_app_id  = local.steam_app_id
   }))
@@ -98,8 +99,9 @@ resource "aws_s3_object" "bootstrap_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/bootstrap_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/bootstrap_sunkenland.sh", {
-    host_username = local.host_username
     bucket        = aws_s3_bucket.sunkenland.id
+    game_dir      = local.game_dir
+    host_username = local.host_username
   }))
   etag = filemd5("${path.module}/local/bootstrap_sunkenland.sh")
 }
@@ -109,12 +111,13 @@ resource "aws_s3_object" "start_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/start_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/start_sunkenland.sh", {
-    host_username   = local.host_username
     bucket          = aws_s3_bucket.sunkenland.id
-    world_guid      = var.world_guid
-    steam_app_id    = local.steam_app_id
+    game_dir        = local.game_dir
+    host_username   = local.host_username
     server_password = var.server_password
     server_region   = var.server_region
+    steam_app_id    = local.steam_app_id
+    world_guid      = var.world_guid
   }))
   etag = filemd5("${path.module}/local/start_sunkenland.sh")
 }
@@ -124,8 +127,9 @@ resource "aws_s3_object" "backup_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/backup_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/backup_sunkenland.sh", {
-    host_username = local.host_username
     bucket        = aws_s3_bucket.sunkenland.id
+    game_dir      = local.game_dir
+    host_username = local.host_username
     world_guid    = var.world_guid
   }))
   etag = filemd5("${path.module}/local/backup_sunkenland.sh")
@@ -136,6 +140,7 @@ resource "aws_s3_object" "crontab" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/crontab"
   content_base64 = base64encode(templatefile("${path.module}/local/crontab", {
+    game_dir      = local.game_dir
     host_username = local.host_username
   }))
   etag = filemd5("${path.module}/local/crontab")
@@ -146,6 +151,7 @@ resource "aws_s3_object" "sunkenland_service" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/sunkenland.service"
   content_base64 = base64encode(templatefile("${path.module}/local/sunkenland.service", {
+    game_dir      = local.game_dir
     host_username = local.host_username
     steam_app_id  = local.steam_app_id
   }))

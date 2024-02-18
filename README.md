@@ -36,6 +36,7 @@ world_name       = "super cheap world"
 server_password  = "nohax"
 ```
 5. Run `terraform init && terraform apply`
+6. TODO: Investigate way to provide world file
 
 ### Example folder structure
 
@@ -65,9 +66,9 @@ easier to just take note of the public IP address when you turn the server on.
 
 The server logic around backups is as follows:
 
-1. Check if world files exist locally and if so start the server using those
-2. If no files exist, try to fetch from backup store and use those
-3. If no backup files exist, create a new world and start the server
+1. Check if world exists locally and if so start the server using that
+2. If no world exists, try to fetch from backup store and use that
+3. If no backup world exists...? (TODO: Investigate way to automatically create new world)
 4. Five minutes after the server has started perform a backup
 5. Perform backups every hour after boot
 
@@ -77,7 +78,7 @@ The server logic around backups is as follows:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.25 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
 
 ## Inputs
@@ -102,7 +103,3 @@ The server logic around backups is as follows:
 | <a name="output_monitoring_url"></a> [monitoring\_url](#output\_monitoring\_url) | URL to monitor the Sunkenland Server |
 | <a name="output_sunkenland_user_passwords"></a> [sunkenland\_user\_passwords](#output\_sunkenland\_user\_passwords) | List of AWS users and their encrypted passwords |
 <!-- END_TF_DOCS -->
-
-## todo
-
-TBC

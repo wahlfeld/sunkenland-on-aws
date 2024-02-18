@@ -52,8 +52,9 @@ resource "aws_spot_instance_request" "sunkenland" {
   instance_type = var.instance_type
   ebs_optimized = true
   user_data = templatefile("${path.module}/local/userdata.sh", {
-    host_username = local.host_username
     bucket        = aws_s3_bucket.sunkenland.id
+    game_dir      = local.game_dir
+    host_username = local.host_username
   })
   iam_instance_profile           = aws_iam_instance_profile.sunkenland.name
   vpc_security_group_ids         = [aws_security_group.ingress.id]

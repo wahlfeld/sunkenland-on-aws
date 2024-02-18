@@ -6,8 +6,8 @@ set -euo pipefail
 # TODO: Turn backups on
 # echo "Syncing backup script"
 
-# aws s3 cp s3://${bucket}/backup_sunkenland.sh /home/${host_username}/sunkenland/backup_sunkenland.sh
-# chmod +x /home/${host_username}/sunkenland/backup_sunkenland.sh
+# aws s3 cp s3://${bucket}/backup_sunkenland.sh ${game_dir}/backup_sunkenland.sh
+# chmod +x ${game_dir}/backup_sunkenland.sh
 
 # echo "Setting crontab"
 
@@ -24,15 +24,14 @@ echo "Preparing to start server"
 echo "Checking if world files exist locally"
 
 echo "TODO: Determine path(s) for world data"
-# if [ ! -f "/home/${host_username}/sunkenland/worlds/${world_guid}.fwl" ]; then
+# if [ ! -f "${game_dir}/worlds/${world_guid}.fwl" ]; then
 #     echo "No world file found locally, checking if backups exist"
 #     BACKUPS=$(aws s3api head-object --bucket ${bucket} --key "${world_guid}.fwl" || true > /dev/null 2>&1)
 #     if [ -z "$${BACKUPS}" ]; then
 #         echo "No backups found using world name \"${world_guid}\". A new world will be created."
 #     else
 #         echo "Backups found, restoring..."
-#         aws s3 cp "s3://${bucket}/${world_guid}.fwl" "/home/${host_username}/sunkenland/worlds/${world_guid}.fwl"
-#         aws s3 cp "s3://${bucket}/${world_guid}.db" "/home/${host_username}/sunkenland/worlds/${world_guid}.db"
+#         aws s3 cp "s3://${bucket}/${world_guid}.fwl" "${game_dir}/worlds/${world_guid}.fwl"
 #     fi
 # else
 #     echo "World files found locally"
@@ -49,7 +48,7 @@ done
 
 echo "Set up world directory"
 mkdir -p /home/${host_username}/.wine/drive_c/users/root/AppData/LocalLow/Vector3\ Studio/Sunkenland/Worlds
-ln -s /home/${host_username}/sunkenland/worlds /home/${host_username}/.wine/drive_c/users/root/AppData/LocalLow/Vector3\ Studio/Sunkenland/Worlds
+ln -s ${game_dir}/worlds /home/${host_username}/.wine/drive_c/users/root/AppData/LocalLow/Vector3\ Studio/Sunkenland/Worlds
 
 # TODO: Unsure if we need xvfb
 Xvfb :1 &
@@ -58,9 +57,9 @@ export DISPLAY=:1
 echo "Starting server PRESS CTRL-C to exit"
 
 # Start the Sunkenland server
-wine /home/${host_username}/sunkenland/Sunkenland-DedicatedServer.exe \
+wine ${game_dir}/Sunkenland-DedicatedServer.exe \
     -nographics -batchmode \
-    -logFile /home/${host_username}/sunkenland/worlds/sunkenland.log \
+    -logFile ${game_dir}/worlds/sunkenland.log \
     -maxPlayerCapacity 10 \
     -password ${server_password} \
     -worldGuid "${world_guid}" \

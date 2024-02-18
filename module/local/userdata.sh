@@ -22,22 +22,22 @@ curl -s https://my-netdata.io/kickstart-static64.sh > kickstart-static64.sh
 bash kickstart-static64.sh --dont-wait
 
 useradd -m ${host_username}
-su - ${host_username} -c "mkdir -p /home/${host_username}/sunkenland"
+su - ${host_username} -c "mkdir -p ${game_dir}"
 
-aws s3 cp s3://${bucket}/install_sunkenland.sh /home/${host_username}/sunkenland/install_sunkenland.sh
-aws s3 cp s3://${bucket}/bootstrap_sunkenland.sh /home/${host_username}/sunkenland/bootstrap_sunkenland.sh
-aws s3 cp s3://${bucket}/sunkenland.service /home/${host_username}/sunkenland/sunkenland.service
+aws s3 cp s3://${bucket}/install_sunkenland.sh ${game_dir}/install_sunkenland.sh
+aws s3 cp s3://${bucket}/bootstrap_sunkenland.sh ${game_dir}/bootstrap_sunkenland.sh
+aws s3 cp s3://${bucket}/sunkenland.service ${game_dir}/sunkenland.service
 
-chmod +x /home/${host_username}/sunkenland/install_sunkenland.sh
-chmod +x /home/${host_username}/sunkenland/bootstrap_sunkenland.sh
+chmod +x ${game_dir}/install_sunkenland.sh
+chmod +x ${game_dir}/bootstrap_sunkenland.sh
 
-chown ${host_username}:${host_username} /home/${host_username}/sunkenland/install_sunkenland.sh
-chown ${host_username}:${host_username} /home/${host_username}/sunkenland/bootstrap_sunkenland.sh
-chown ${host_username}:${host_username} /home/${host_username}/sunkenland/sunkenland.service
+chown ${host_username}:${host_username} ${game_dir}/install_sunkenland.sh
+chown ${host_username}:${host_username} ${game_dir}/bootstrap_sunkenland.sh
+chown ${host_username}:${host_username} ${game_dir}/sunkenland.service
 
-cp /home/${host_username}/sunkenland/sunkenland.service /etc/systemd/system
+cp ${game_dir}/sunkenland.service /etc/systemd/system
 
-su - ${host_username} -c "bash /home/${host_username}/sunkenland/install_sunkenland.sh"
+su - ${host_username} -c "bash ${game_dir}/install_sunkenland.sh"
 
 systemctl daemon-reload
 systemctl enable sunkenland.service

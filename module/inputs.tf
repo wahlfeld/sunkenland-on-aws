@@ -2,6 +2,7 @@ locals {
   host_username = "slserver"
   name          = var.purpose != "prod" ? "sunkenland-${var.purpose}${var.unique_id}" : "sunkenland"
   steam_app_id  = "2667530"
+  game_dir      = "/home/${local.host_username}/sunkenland"
   tags = {
     "Purpose"   = var.purpose
     "Component" = "Sunkenland Server"
