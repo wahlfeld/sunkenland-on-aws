@@ -117,7 +117,7 @@ resource "aws_s3_object" "start_sunkenland" {
     server_password = var.server_password
     server_region   = var.server_region
     steam_app_id    = local.steam_app_id
-    world_guid      = var.world_guid
+    world_guid      = local.world_guid
   }))
   etag = filemd5("${path.module}/local/start_sunkenland.sh")
 }
@@ -130,7 +130,7 @@ resource "aws_s3_object" "backup_sunkenland" {
     bucket        = aws_s3_bucket.sunkenland.id
     game_dir      = local.game_dir
     host_username = local.host_username
-    world_guid    = var.world_guid
+    world_guid    = local.world_guid
   }))
   etag = filemd5("${path.module}/local/backup_sunkenland.sh")
 }
@@ -156,4 +156,31 @@ resource "aws_s3_object" "sunkenland_service" {
     steam_app_id  = local.steam_app_id
   }))
   etag = filemd5("${path.module}/local/sunkenland.service")
+}
+
+# TODO: Parameterise contents of these world files
+resource "aws_s3_object" "sunkenland_world" {
+  #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
+  bucket         = aws_s3_bucket.sunkenland.id
+  key            = "/World.json"
+  content_base64 = base64encode(file("${path.module}/local/World.json"))
+  etag           = filemd5("${path.module}/local/World.json")
+}
+
+# TODO: Parameterise contents of these world files
+resource "aws_s3_object" "sunkenland_world_config" {
+  #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
+  bucket         = aws_s3_bucket.sunkenland.id
+  key            = "/StartGameConfig.json"
+  content_base64 = base64encode(file("${path.module}/local/StartGameConfig.json"))
+  etag           = filemd5("${path.module}/local/StartGameConfig.json")
+}
+
+# TODO: Parameterise contents of these world files
+resource "aws_s3_object" "sunkenland_world_setting" {
+  #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
+  bucket         = aws_s3_bucket.sunkenland.id
+  key            = "/WorldSetting.json"
+  content_base64 = base64encode(file("${path.module}/local/WorldSetting.json"))
+  etag           = filemd5("${path.module}/local/WorldSetting.json")
 }

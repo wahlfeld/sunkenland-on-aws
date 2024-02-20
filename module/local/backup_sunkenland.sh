@@ -7,4 +7,4 @@ set -euo pipefail
 echo "Backing up Sunkenland world data"
 
 echo "TODO: Determine path(s) for world data"
-# aws s3 cp "${game_dir}/worlds/${world_guid}.fwl" s3://${bucket}/
+# aws s3 cp "${game_dir}/Worlds/${world_guid}.fwl" s3://${bucket}/

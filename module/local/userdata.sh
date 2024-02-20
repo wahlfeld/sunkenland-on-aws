@@ -8,7 +8,7 @@ apt install -y \
     ca-certificates \
     cabextract \
     jq \
-    lib32gcc1 \
+    lib32gcc-s1 \
     lib32stdc++6 \
     libcurl4-openssl-dev:i386 \
     libjson-c-dev \

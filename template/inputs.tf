@@ -41,8 +41,3 @@ variable "unique_id" {
   default     = ""
   description = "The ID of the deployment (used for tests)"
 }
-
-variable "world_guid" {
-  type        = string
-  description = "The Sunkenland world name GUID"
-}

@@ -3,6 +3,7 @@ locals {
   name          = var.purpose != "prod" ? "sunkenland-${var.purpose}${var.unique_id}" : "sunkenland"
   steam_app_id  = "2667530"
   game_dir      = "/home/${local.host_username}/sunkenland"
+  world_guid    = "8126a58f-b357-4606-8ae1-b6d4f57e8b32" # TODO
   tags = {
     "Purpose"   = var.purpose
     "Component" = "Sunkenland Server"
@@ -45,9 +46,5 @@ variable "sns_email" {
 }
 
 variable "unique_id" {
-  type = string
-}
-
-variable "world_guid" {
   type = string
 }

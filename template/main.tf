@@ -9,5 +9,4 @@ module "main" {
   server_region           = var.server_region
   sns_email               = var.sns_email
   unique_id               = var.unique_id
-  world_guid              = var.world_guid
 }
