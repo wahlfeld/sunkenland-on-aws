@@ -23,10 +23,11 @@ echo "Preparing to start server"
 
 # echo "Checking if world files exist locally"
 # TODO
+mkdir -p "${game_dir}/Worlds/${world_guid}"
 echo "Fetching template world files from S3"
-if [ ! -f "${game_dir}/${world_guid}/StartGameConfig.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/${world_guid}/StartGameConfig.json"; fi
-if [ ! -f "${game_dir}/${world_guid}/World.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/${world_guid}/World.json"; fi
-if [ ! -f "${game_dir}/${world_guid}/WorldSetting.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/${world_guid}/WorldSetting.json"; fi
+if [ ! -f "${game_dir}/Worlds/${world_guid}/StartGameConfig.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_guid}/StartGameConfig.json"; fi
+if [ ! -f "${game_dir}/Worlds/${world_guid}/World.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_guid}/World.json"; fi
+if [ ! -f "${game_dir}/Worlds/${world_guid}/WorldSetting.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_guid}/WorldSetting.json"; fi
 # if [ ! -f "${game_dir}/Worlds/${world_guid}.fwl" ]; then
 #     echo "No world file found locally, checking if backups exist"
 #     BACKUPS=$(aws s3api head-object --bucket ${bucket} --key "${world_guid}.fwl" || true > /dev/null 2>&1)
@@ -44,16 +45,13 @@ echo "Clean up Wine environment and initialize"
 # rm -rf /home/${host_username}/.wine
 wineboot --init
 
-echo "Wait for Wine initialization"
-until [[ -f /home/${host_username}/.wine/system.reg ]]; do
-    sleep 1
-done
+SLEEP=30
+echo "Wait for Wine initialization. Sleeping for $${SLEEP} seconds..."
+sleep "$${SLEEP}"
 
 echo "Set up world directory"
-mkdir -p "/home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland"
-rm -rf "/home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland/Worlds"
-ln -s "${game_dir}/Worlds/ /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland"
-cp -r "${game_dir}/${world_guid}" "${game_dir}/Worlds/${world_guid}"
+mkdir -p /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland
+ln -sfn ${game_dir}/Worlds/ /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland
 
 # TODO: Unsure if we need xvfb
 Xvfb :1 &
@@ -62,11 +60,16 @@ export DISPLAY=:1
 echo "Starting server PRESS CTRL-C to exit"
 
 # TODO: Parameterise server start arguments
+# TODO: Update server version to 0.2.03
 # Start the Sunkenland server
 wine ${game_dir}/Sunkenland-DedicatedServer.exe \
-    -nographics -batchmode \
-    -logFile /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland/Worlds/sunkenland.log \
+    -nographics \
+    -batchmode \
+    -logFile ${game_dir}/Worlds/sunkenland.log \
     -worldGuid ${world_guid} \
-    -region "${server_region}"
+    -region "${server_region}" \
+    -port 27015 \
+    -queryport 27015 \
+    -maxPlayerCapacity 10
 
 # export LD_LIBRARY_PATH=$templdpath
