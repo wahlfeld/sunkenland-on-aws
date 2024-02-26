@@ -111,13 +111,14 @@ resource "aws_s3_object" "start_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/start_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/start_sunkenland.sh", {
-    bucket          = aws_s3_bucket.sunkenland.id
-    game_dir        = local.game_dir
-    host_username   = local.host_username
-    server_password = var.server_password
-    server_region   = var.server_region
-    steam_app_id    = local.steam_app_id
-    world_guid      = local.world_guid
+    bucket            = aws_s3_bucket.sunkenland.id
+    game_dir          = local.game_dir
+    host_username     = local.host_username
+    server_password   = var.server_password
+    server_region     = var.server_region
+    steam_app_id      = local.steam_app_id
+    world_guid        = local.world_guid
+    world_folder_name = local.world_folder_name
   }))
   etag = filemd5("${path.module}/local/start_sunkenland.sh")
 }
@@ -161,26 +162,47 @@ resource "aws_s3_object" "sunkenland_service" {
 # TODO: Parameterise contents of these world files
 resource "aws_s3_object" "sunkenland_world" {
   #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
-  bucket         = aws_s3_bucket.sunkenland.id
-  key            = "/World.json"
-  content_base64 = base64encode(file("${path.module}/local/World.json"))
-  etag           = filemd5("${path.module}/local/World.json")
+  bucket = aws_s3_bucket.sunkenland.id
+  key    = "/World.json"
+  content_base64 = base64encode(templatefile("${path.module}/local/World.json", {
+    ApplicationVersion = var.application_version
+  }))
+  etag = filemd5("${path.module}/local/World.json")
 }
 
 # TODO: Parameterise contents of these world files
 resource "aws_s3_object" "sunkenland_world_config" {
   #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
-  bucket         = aws_s3_bucket.sunkenland.id
-  key            = "/StartGameConfig.json"
-  content_base64 = base64encode(file("${path.module}/local/StartGameConfig.json"))
-  etag           = filemd5("${path.module}/local/StartGameConfig.json")
+  bucket = aws_s3_bucket.sunkenland.id
+  key    = "/StartGameConfig.json"
+  content_base64 = base64encode(templatefile("${path.module}/local/StartGameConfig.json", {
+    isSessionVisible  = var.session_visible
+    serverPassword    = var.server_password
+    maxPlayerCapacity = var.max_players
+  }))
+  etag = filemd5("${path.module}/local/StartGameConfig.json")
 }
 
 # TODO: Parameterise contents of these world files
 resource "aws_s3_object" "sunkenland_world_setting" {
   #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
-  bucket         = aws_s3_bucket.sunkenland.id
-  key            = "/WorldSetting.json"
-  content_base64 = base64encode(file("${path.module}/local/WorldSetting.json"))
-  etag           = filemd5("${path.module}/local/WorldSetting.json")
+  bucket = aws_s3_bucket.sunkenland.id
+  key    = "/WorldSetting.json"
+  content_base64 = base64encode(templatefile("${path.module}/local/WorldSetting.json", {
+    ApplicationVersion        = var.application_version
+    worldDescription          = var.world_description
+    enemyDifficulty           = var.enemy_difficulty
+    enemyGarrisonDifficulty   = var.enemy_garrison_difficulty
+    enemyRaidDifficulty       = var.enemy_raid_difficulty
+    survivalDifficulty        = var.survival_difficulty
+    isFriendlyFireEnabled     = var.friendly_fire
+    isResearchShared          = var.research_shared
+    isMapShared               = var.map_shared
+    isFlagShared              = var.flag_shared
+    isSpawnPointShared        = var.spawn_point_shared
+    isUsingRandomSpawnPoints  = var.random_spawn_points
+    respawnTime               = var.respawn_time
+    lootRespawnIntervalInDays = var.loot_respawn_time_in_days
+  }))
+  etag = filemd5("${path.module}/local/WorldSetting.json")
 }

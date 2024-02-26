@@ -15,7 +15,7 @@ apt install -y \
     libsdl2-2.0-0:i386 \
     libtool \
     wine \
-    xvfb \
+    xvfb
 
 cd /tmp
 curl -s https://my-netdata.io/kickstart-static64.sh > kickstart-static64.sh

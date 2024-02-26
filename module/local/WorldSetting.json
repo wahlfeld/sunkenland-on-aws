@@ -1,24 +1,24 @@
 {
 	"ApplicationVersion" : {
 		"__type" : "string",
-		"value" : "0.2.03"
+		"value" : "${ApplicationVersion}"
 	},
 	"WorldSettingProfile" : {
 		"__type" : "WorldSettingProfile,Assembly-CSharp",
 		"value" : {
-			"worldDescription" : "",
-			"enemyDifficulty" : 1,
-			"enemyGarrisonDifficulty" : 2,
-			"enemyRaidDifficulty" : 2,
-			"survivalDifficulty" : 1,
-			"isFriendlyFireEnabled" : false,
-			"isResearchShared" : true,
-			"isMapShared" : true,
-			"isFlagShared" : true,
-			"isSpawnPointShared" : true,
-			"isUsingRandomSpawnPoints" : false,
-			"respawnTime" : 10,
-			"lootRespawnIntervalInDays" : 4
+			"worldDescription" : "${worldDescription}",
+			"enemyDifficulty" : ${enemyDifficulty},
+			"enemyGarrisonDifficulty" : ${enemyGarrisonDifficulty},
+			"enemyRaidDifficulty" : ${enemyRaidDifficulty},
+			"survivalDifficulty" : ${survivalDifficulty},
+			"isFriendlyFireEnabled" : ${isFriendlyFireEnabled},
+			"isResearchShared" : ${isResearchShared},
+			"isMapShared" : ${isMapShared},
+			"isFlagShared" : ${isFlagShared},
+			"isSpawnPointShared" : ${isSpawnPointShared},
+			"isUsingRandomSpawnPoints" : ${isUsingRandomSpawnPoints},
+			"respawnTime" : ${respawnTime},
+			"lootRespawnIntervalInDays" ${lootRespawnIntervalInDays}
 		}
 	}
 }

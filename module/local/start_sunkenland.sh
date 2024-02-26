@@ -1,75 +1,41 @@
 #!/bin/bash
-# TODO: Fix $LD_LIBRARY_PATH?
 set -euo pipefail
-# set -e
 
-# TODO: Turn backups on
-# echo "Syncing backup script"
+# TODO: Is this important?
+# Sunkenland game (app) ID: https://steamdb.info/app/2080690/info/
+export SteamAppId=2080690
 
-# aws s3 cp s3://${bucket}/backup_sunkenland.sh ${game_dir}/backup_sunkenland.sh
-# chmod +x ${game_dir}/backup_sunkenland.sh
-
-# echo "Setting crontab"
-
-# aws s3 cp s3://${bucket}/crontab /home/${host_username}/crontab
-# crontab < /home/${host_username}/crontab
-
-echo "Preparing to start server"
-
-# TODO: Unsure if we need this
-# export templdpath=$LD_LIBRARY_PATH
-# export LD_LIBRARY_PATH=./linux64:$LD_LIBRARY_PATH
-# export SteamAppId=${steam_app_id}
-
-# echo "Checking if world files exist locally"
-# TODO
-mkdir -p "${game_dir}/Worlds/${world_guid}"
-echo "Fetching template world files from S3"
-if [ ! -f "${game_dir}/Worlds/${world_guid}/StartGameConfig.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_guid}/StartGameConfig.json"; fi
-if [ ! -f "${game_dir}/Worlds/${world_guid}/World.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_guid}/World.json"; fi
-if [ ! -f "${game_dir}/Worlds/${world_guid}/WorldSetting.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_guid}/WorldSetting.json"; fi
-# if [ ! -f "${game_dir}/Worlds/${world_guid}.fwl" ]; then
-#     echo "No world file found locally, checking if backups exist"
-#     BACKUPS=$(aws s3api head-object --bucket ${bucket} --key "${world_guid}.fwl" || true > /dev/null 2>&1)
-#     if [ -z "$${BACKUPS}" ]; then
-#         echo "No backups found using world name \"${world_guid}\". A new world will be created."
-#     else
-#         echo "Backups found, restoring..."
-#         aws s3 cp "s3://${bucket}/${world_guid}.fwl" "${game_dir}/Worlds/${world_guid}.fwl"
-#     fi
-# else
-#     echo "World files found locally"
-# fi
-
-echo "Clean up Wine environment and initialize"
-# rm -rf /home/${host_username}/.wine
+echo "Reset Wine environment and initialize"
+rm -rf /home/${host_username}/.wine
 wineboot --init
 
-SLEEP=30
+SLEEP=15
 echo "Wait for Wine initialization. Sleeping for $${SLEEP} seconds..."
 sleep "$${SLEEP}"
 
-echo "Set up world directory"
-mkdir -p /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland
-ln -sfn ${game_dir}/Worlds/ /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland
-
-# TODO: Unsure if we need xvfb
+# TODO: Test is xvfb is required
+echo "Starting xvfb (may not be required)"
 Xvfb :1 &
 export DISPLAY=:1
 
+echo "Preparing world data"
+mkdir -p "${game_dir}/Worlds/${world_folder_name}"
+
+echo "Fetching world files from S3 if not present locally"
+if [ ! -f "${game_dir}/Worlds/${world_folder_name}/StartGameConfig.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_folder_name}/StartGameConfig.json"; fi
+if [ ! -f "${game_dir}/Worlds/${world_folder_name}/World.json" ]; then aws s3 cp "s3://${bucket}/World.json" "${game_dir}/Worlds/${world_folder_name}/World.json"; fi
+if [ ! -f "${game_dir}/Worlds/${world_folder_name}/WorldSetting.json" ]; then aws s3 cp "s3://${bucket}/WorldSetting.json" "${game_dir}/Worlds/${world_folder_name}/WorldSetting.json"; fi
+
+echo "Creating server worlds directory"
+mkdir -p /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland
+ln -sfn ${game_dir}/Worlds/ /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland
+
 echo "Starting server PRESS CTRL-C to exit"
 
-# TODO: Parameterise server start arguments
-# TODO: Update server version to 0.2.03
 # Start the Sunkenland server
 wine ${game_dir}/Sunkenland-DedicatedServer.exe \
     -nographics \
     -batchmode \
     -logFile ${game_dir}/Worlds/sunkenland.log \
-    -worldGuid ${world_guid} \
-    -region "${server_region}" \
-    -port 27015 \
-    -queryport 27015 \
-    -maxPlayerCapacity 10
-
-# export LD_LIBRARY_PATH=$templdpath
+    -worldGuid "${world_guid}" \
+    -region "${server_region}"
