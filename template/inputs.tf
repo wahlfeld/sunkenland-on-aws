@@ -83,6 +83,7 @@ variable "s3_lifecycle_expiration" {
 
 variable "server_password" {
   type        = string
+  default     = ""
   description = "The server password"
 }
 
