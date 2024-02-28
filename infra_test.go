@@ -400,7 +400,7 @@ func fetchSyslogForInstance(t *testing.T, region string, workingDirectory string
 
 func checkSunkenlandIsRunning(t *testing.T, region string, instanceID string) error {
 	t.Log("Checking if Sunkenland is running")
-	_, err := retry.DoWithRetryE(t, "Checking if Sunkenland service is active", 100, 10*time.Second, func() (string, error) {
+	_, err := retry.DoWithRetryE(t, "Checking if Sunkenland service is active", 25, 10*time.Second, func() (string, error) {
 		output, err := taws.CheckSsmCommandE(t, region, instanceID, "systemctl is-active sunkenland", 30*time.Second)
 		if err != nil {
 			t.Logf("Command output was '%+v' and error was '%v'", output, err)
@@ -421,7 +421,7 @@ func checkSunkenlandIsRunning(t *testing.T, region string, instanceID string) er
 		return err
 	}
 
-	_, err = retry.DoWithRetryE(t, "Checking if Sunkenland/Wine process is running", 100, 10*time.Second, func() (string, error) {
+	_, err = retry.DoWithRetryE(t, "Checking if Sunkenland/Wine process is running", 25, 10*time.Second, func() (string, error) {
 		output, err := taws.CheckSsmCommandE(t, region, instanceID, "pgrep wine", 30*time.Second)
 		if err != nil {
 			t.Logf("Command output was '%+v' and error was '%v'", output, err)
@@ -449,7 +449,7 @@ func checkSunkenlandIsRunning(t *testing.T, region string, instanceID string) er
 		return err
 	}
 
-	_, err = retry.DoWithRetryE(t, "Checking for server start success log", 100, 10*time.Second, func() (string, error) {
+	_, err = retry.DoWithRetryE(t, "Checking for server start success log", 25, 10*time.Second, func() (string, error) {
 		logLineToCheck := "Server Start Complete, Ready for Clients to Join."
 		logFile := "/home/slserver/sunkenland/Worlds/sunkenland.log"
 		output, err := taws.CheckSsmCommandE(t, region, instanceID, fmt.Sprintf("grep '%s' %s", logLineToCheck, logFile), 30*time.Second)
