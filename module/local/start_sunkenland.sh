@@ -64,5 +64,8 @@ wine ${game_dir}/Sunkenland-DedicatedServer.exe \
     -nographics \
     -batchmode \
     -logFile ${game_dir}/Worlds/sunkenland.log \
-    -worldGuid "${world_guid}" \
-    -region "${server_region}"
+    -worldGuid "${worldGuid}" \
+    -region "${region}" \
+    -password "${password}" \
+    -makeSessionInvisible "${makeSessionInvisible}" \
+    -maxPlayerCapacity "${maxPlayerCapacity}"
