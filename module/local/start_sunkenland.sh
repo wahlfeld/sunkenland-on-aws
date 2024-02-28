@@ -19,12 +19,29 @@ Xvfb :1 &
 export DISPLAY=:1
 
 echo "Preparing world data"
-mkdir -p "${game_dir}/Worlds/${world_folder_name}"
+WORLD_DIR="${game_dir}/Worlds/${world_folder_name}"
+mkdir -p "$${WORLD_DIR}"
 
-echo "Fetching world files from S3 if not present locally"
-if [ ! -f "${game_dir}/Worlds/${world_folder_name}/StartGameConfig.json" ]; then aws s3 cp "s3://${bucket}/StartGameConfig.json" "${game_dir}/Worlds/${world_folder_name}/StartGameConfig.json"; fi
-if [ ! -f "${game_dir}/Worlds/${world_folder_name}/World.json" ]; then aws s3 cp "s3://${bucket}/World.json" "${game_dir}/Worlds/${world_folder_name}/World.json"; fi
-if [ ! -f "${game_dir}/Worlds/${world_folder_name}/WorldSetting.json" ]; then aws s3 cp "s3://${bucket}/WorldSetting.json" "${game_dir}/Worlds/${world_folder_name}/WorldSetting.json"; fi
+download_file() {
+  local local_file="$${1}"
+  local s3_file="$${2}"
+  if [ ! -f "$${local_file}" ]; then
+    echo "Downloading $${s3_file} to $${local_file}"
+    aws s3 cp "$${s3_file}" "$${local_file}" || echo "Error downloading $${s3_file} to $${local_file}"
+  fi
+}
+
+world_files=(
+  "StartGameConfig.json"
+  "World.json"
+  "WorldSetting.json"
+)
+
+for file in "$${world_files[@]}"; do
+  local_file="$${WORLD_DIR/$${file}"
+  s3_file="s3://${bucket}/$${file}"
+  download_file "$${local_file}" "$${s3_file}"
+done
 
 echo "Creating server worlds directory"
 mkdir -p /home/${host_username}/.wine/drive_c/users/${host_username}/AppData/LocalLow/Vector3\ Studio/Sunkenland

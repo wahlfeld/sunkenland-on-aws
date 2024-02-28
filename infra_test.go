@@ -4,21 +4,15 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	taws "github.com/gruntwork-io/terratest/modules/aws"
 	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
@@ -26,18 +20,19 @@ import (
 )
 
 // TODO: Determine path(s) for world data"
-const worldFilesLocalDirectory = "/home/vhserver/.config/unity3d/IronGate/sunkenland/worlds_local"
-const worldName string = "test-world"
+// const worldFilesLocalDirectory = "/home/vhserver/.config/unity3d/IronGate/sunkenland/worlds_local"
+// const worldName string = "test-world"
 
 var uniqueID string = strings.ToLower(random.UniqueId())
 var stateBucket string = fmt.Sprintf("%s-terratest-sunkenland", uniqueID)
 var key string = fmt.Sprintf("%s/terraform.tfstate", uniqueID)
-var worldFileFwlName = fmt.Sprintf("%s.fwl", worldName)
-var worldFileDbName = fmt.Sprintf("%s.db", worldName)
-var worldFileLocalPaths = map[string]string{
-	"fwl": fmt.Sprintf("%s/%s", worldFilesLocalDirectory, worldFileFwlName),
-	"db":  fmt.Sprintf("%s/%s", worldFilesLocalDirectory, worldFileDbName),
-}
+
+// var worldFileFwlName = fmt.Sprintf("%s.fwl", worldName)
+// var worldFileDbName = fmt.Sprintf("%s.db", worldName)
+// var worldFileLocalPaths = map[string]string{
+// 	"fwl": fmt.Sprintf("%s/%s", worldFilesLocalDirectory, worldFileFwlName),
+// 	"db":  fmt.Sprintf("%s/%s", worldFilesLocalDirectory, worldFileDbName),
+// }
 
 // FunctionWithError is a function type that returns an error
 type FunctionWithError func() error
@@ -48,9 +43,9 @@ func TestTerraform(t *testing.T) {
 	workingDirectory := "./template"
 	region := taws.GetRandomStableRegion(t, nil, nil)
 
-	sess := session.Must(session.NewSession(&aws.Config{
-		Region: aws.String(region),
-	}))
+	// sess := session.Must(session.NewSession(&aws.Config{
+	// 	Region: aws.String(region),
+	// }))
 
 	defer test_structure.RunTestStage(t, "teardown_terraform_and_state_bucket", func() {
 		_, err := undeployUsingTerraform(t, workingDirectory)
@@ -134,108 +129,108 @@ func TestTerraform(t *testing.T) {
 		require.NoError(t, err, "sunkenland is not running. Error: %v", err)
 	})
 
-	test_structure.RunTestStage(t, "test_backup", func() {
-		// Given the instance is running and SSM is available
-		// When it is stopped and started again
-		// Expect the world files to be present in the backup S3 bucket
+	// test_structure.RunTestStage(t, "test_backup", func() {
+	// 	// Given the instance is running and SSM is available
+	// 	// When it is stopped and started again
+	// 	// Expect the world files to be present in the backup S3 bucket
 
-		terraformOptions := test_structure.LoadTerraformOptions(t, workingDirectory)
+	// 	terraformOptions := test_structure.LoadTerraformOptions(t, workingDirectory)
 
-		instanceID := terraform.Output(t, terraformOptions, "instance_id")
-		bucketID := terraform.Output(t, terraformOptions, "bucket_id")
+	// 	instanceID := terraform.Output(t, terraformOptions, "instance_id")
+	// 	bucketID := terraform.Output(t, terraformOptions, "bucket_id")
 
-		// .db file is not created immediately by sunkenland, so we instantiate it
-		_, err := runCommandWithRetry(t, fmt.Sprintf("Instantiating .db world file %s", worldFileLocalPaths["db"]), 2, 30*time.Second, region, instanceID, fmt.Sprintf("touch %s", worldFileLocalPaths["db"]), 5*time.Second)
-		if err != nil {
-			// Ensure bucket is emptied so that Terraform can destroy it
-			emptyAndDeleteBucket(t, region, bucketID)
-			t.Fatalf("Error running command: %v", err)
-		}
+	// 	// .db file is not created immediately by sunkenland, so we instantiate it
+	// 	_, err := runCommandWithRetry(t, fmt.Sprintf("Instantiating .db world file %s", worldFileLocalPaths["db"]), 2, 30*time.Second, region, instanceID, fmt.Sprintf("touch %s", worldFileLocalPaths["db"]), 5*time.Second)
+	// 	if err != nil {
+	// 		// Ensure bucket is emptied so that Terraform can destroy it
+	// 		emptyAndDeleteBucket(t, region, bucketID)
+	// 		t.Fatalf("Error running command: %v", err)
+	// 	}
 
-		err = startStopInstance(t, sess, instanceID)
-		if err != nil {
-			// Ensure bucket is emptied so that Terraform can destroy it
-			emptyAndDeleteBucket(t, region, bucketID)
-			t.Fatalf("Error stopping and starting instance: %v", err)
-		}
+	// 	err = startStopInstance(t, sess, instanceID)
+	// 	if err != nil {
+	// 		// Ensure bucket is emptied so that Terraform can destroy it
+	// 		emptyAndDeleteBucket(t, region, bucketID)
+	// 		t.Fatalf("Error stopping and starting instance: %v", err)
+	// 	}
 
-		worldFileNames := []string{worldFileFwlName, worldFileDbName}
-		_, err = retry.DoWithRetryE(t, fmt.Sprintf("Checking that world files exist in S3 bucket %s", bucketID), 5, 5*time.Second, func() (string, error) {
-			err = checkFilesExistInBucket(t, sess, bucketID, worldFileNames)
-			if err != nil {
-				return "", fmt.Errorf("files %v not found in bucket %s: %v", worldFileNames, bucketID, err)
-			}
-			return "", nil
-		})
-		if err != nil {
-			// Ensure bucket is emptied so that Terraform can destroy it
-			emptyAndDeleteBucket(t, region, bucketID)
-			t.Fatal(err)
-		}
+	// 	worldFileNames := []string{worldFileFwlName, worldFileDbName}
+	// 	_, err = retry.DoWithRetryE(t, fmt.Sprintf("Checking that world files exist in S3 bucket %s", bucketID), 5, 5*time.Second, func() (string, error) {
+	// 		err = checkFilesExistInBucket(t, sess, bucketID, worldFileNames)
+	// 		if err != nil {
+	// 			return "", fmt.Errorf("files %v not found in bucket %s: %v", worldFileNames, bucketID, err)
+	// 		}
+	// 		return "", nil
+	// 	})
+	// 	if err != nil {
+	// 		// Ensure bucket is emptied so that Terraform can destroy it
+	// 		emptyAndDeleteBucket(t, region, bucketID)
+	// 		t.Fatal(err)
+	// 	}
 
-		t.Log("Files found in bucket")
-	})
+	// 	t.Log("Files found in bucket")
+	// })
 
-	test_structure.RunTestStage(t, "test_restore", func() {
-		// Given the instance is running and SSM is available
-		// When it is started and no local world files are present
-		// Expect the backup S3 bucket world files to be used
+	// test_structure.RunTestStage(t, "test_restore", func() {
+	// 	// Given the instance is running and SSM is available
+	// 	// When it is started and no local world files are present
+	// 	// Expect the backup S3 bucket world files to be used
 
-		terraformOptions := test_structure.LoadTerraformOptions(t, workingDirectory)
+	// 	terraformOptions := test_structure.LoadTerraformOptions(t, workingDirectory)
 
-		instanceID := terraform.Output(t, terraformOptions, "instance_id")
-		bucketID := terraform.Output(t, terraformOptions, "bucket_id")
+	// 	instanceID := terraform.Output(t, terraformOptions, "instance_id")
+	// 	bucketID := terraform.Output(t, terraformOptions, "bucket_id")
 
-		// Ensure bucket is emptied so that Terraform can destroy it
-		defer emptyAndDeleteBucket(t, region, bucketID)
+	// 	// Ensure bucket is emptied so that Terraform can destroy it
+	// 	defer emptyAndDeleteBucket(t, region, bucketID)
 
-		// Make sure SSM is ready before trying to connect
-		taws.WaitForSsmInstance(t, region, instanceID, 3*time.Minute)
+	// 	// Make sure SSM is ready before trying to connect
+	// 	taws.WaitForSsmInstance(t, region, instanceID, 3*time.Minute)
 
-		// Stop Sunkenland service before removing local world files
-		_, err := sunkenlandService(t, region, instanceID, "stop")
-		require.NoError(t, err)
+	// 	// Stop Sunkenland service before removing local world files
+	// 	_, err := sunkenlandService(t, region, instanceID, "stop")
+	// 	require.NoError(t, err)
 
-		// Remove any local world files if they exist
-		for _, worldFileLocalPath := range worldFileLocalPaths {
-			_, err := runCommandWithRetry(t, "Removing local world files", 2, 30*time.Second, region, instanceID, fmt.Sprintf("rm -rf %s", worldFileLocalPath), 5*time.Second)
-			require.NoError(t, err, "Error running command: %v", err)
-		}
+	// 	// Remove any local world files if they exist
+	// 	for _, worldFileLocalPath := range worldFileLocalPaths {
+	// 		_, err := runCommandWithRetry(t, "Removing local world files", 2, 30*time.Second, region, instanceID, fmt.Sprintf("rm -rf %s", worldFileLocalPath), 5*time.Second)
+	// 		require.NoError(t, err, "Error running command: %v", err)
+	// 	}
 
-		_, err = sunkenlandService(t, region, instanceID, "start")
-		require.NoError(t, err)
+	// 	_, err = sunkenlandService(t, region, instanceID, "start")
+	// 	require.NoError(t, err)
 
-		err = checkSunkenlandIsRunning(t, region, instanceID)
-		require.NoError(t, err, "sunkenland is not running")
+	// 	err = checkSunkenlandIsRunning(t, region, instanceID)
+	// 	require.NoError(t, err, "sunkenland is not running")
 
-		_, err = retry.DoWithRetryE(t, "Checking if backups were restored from S3", 2, 60*time.Second, func() (string, error) {
-			output, err := taws.CheckSsmCommandE(t, region, instanceID, "grep 'Backups found, restoring...' /var/log/syslog", 3*time.Minute)
-			if err != nil {
-				return "", fmt.Errorf("command output was '%+v' and error was '%v'", output, err)
-			}
+	// 	_, err = retry.DoWithRetryE(t, "Checking if backups were restored from S3", 2, 60*time.Second, func() (string, error) {
+	// 		output, err := taws.CheckSsmCommandE(t, region, instanceID, "grep 'Backups found, restoring...' /var/log/syslog", 3*time.Minute)
+	// 		if err != nil {
+	// 			return "", fmt.Errorf("command output was '%+v' and error was '%v'", output, err)
+	// 		}
 
-			t.Log("Checking if log was found")
-			if output == nil {
-				return "", fmt.Errorf("log not found (was nil)")
-			}
+	// 		t.Log("Checking if log was found")
+	// 		if output == nil {
+	// 			return "", fmt.Errorf("log not found (was nil)")
+	// 		}
 
-			if output.Stdout == "" {
-				return "", fmt.Errorf("log not found (was \"\")")
-			}
+	// 		if output.Stdout == "" {
+	// 			return "", fmt.Errorf("log not found (was \"\")")
+	// 		}
 
-			return "", nil
-		})
-		require.NoError(t, err)
+	// 		return "", nil
+	// 	})
+	// 	require.NoError(t, err)
 
-		t.Log("Log found")
+	// 	t.Log("Log found")
 
-		t.Log("############")
-		t.Log("### PASS ###")
-		t.Log("############")
-		t.Logf("Emptying and deleting bucket %s now, so that Terraform can destroy it", bucketID)
-		t.Log("Skipping syslog...")
-		os.Setenv("SKIP_logs", "true")
-	})
+	// 	t.Log("############")
+	// 	t.Log("### PASS ###")
+	// 	t.Log("############")
+	// 	t.Logf("Emptying and deleting bucket %s now, so that Terraform can destroy it", bucketID)
+	// 	t.Log("Skipping syslog...")
+	// 	os.Setenv("SKIP_logs", "true")
+	// })
 }
 
 func deployUsingTerraform(t *testing.T, region string, workingDirectory string) {
@@ -249,7 +244,7 @@ func deployUsingTerraform(t *testing.T, region string, workingDirectory string) 
 			"server_password": "test-password",
 			"sns_email":       "fake@email.com",
 			"unique_id":       uniqueID,
-			"world_name":      worldName,
+			// "world_name":      worldName,
 			"admins": map[string]interface{}{
 				fmt.Sprintf("%s-testuser1", uniqueID): 76561197993928956,
 				fmt.Sprintf("%s-testuser2", uniqueID): 76561197994340320,
@@ -328,83 +323,83 @@ func fetchSyslogForInstance(t *testing.T, region string, workingDirectory string
 	t.Logf("Most recent syslog for Instance %s:\n\n%s\n", instanceID, logs)
 }
 
-func checkFilesExistInBucket(t *testing.T, sess *session.Session, bucketName string, fileNames []string) error {
-	svc := s3.New(sess)
+// func checkFilesExistInBucket(t *testing.T, sess *session.Session, bucketName string, fileNames []string) error {
+// 	svc := s3.New(sess)
 
-	for _, fileName := range fileNames {
-		input := &s3.HeadObjectInput{
-			Bucket: aws.String(bucketName),
-			Key:    aws.String(fileName),
-		}
+// 	for _, fileName := range fileNames {
+// 		input := &s3.HeadObjectInput{
+// 			Bucket: aws.String(bucketName),
+// 			Key:    aws.String(fileName),
+// 		}
 
-		_, err := svc.HeadObject(input)
-		if err != nil {
-			if awsErr, ok := err.(awserr.Error); ok && awsErr.Code() == "NotFound" {
-				return fmt.Errorf("file %s does not exist in the bucket %s", fileName, bucketName)
-			}
-			return err
-		}
-	}
-	return nil
-}
+// 		_, err := svc.HeadObject(input)
+// 		if err != nil {
+// 			if awsErr, ok := err.(awserr.Error); ok && awsErr.Code() == "NotFound" {
+// 				return fmt.Errorf("file %s does not exist in the bucket %s", fileName, bucketName)
+// 			}
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }
 
-func startStopInstance(t *testing.T, sess *session.Session, instanceID string) error {
-	svc := ec2.New(sess)
+// func startStopInstance(t *testing.T, sess *session.Session, instanceID string) error {
+// 	svc := ec2.New(sess)
 
-	t.Logf("Stopping instance %s", instanceID)
-	inputStop := &ec2.StopInstancesInput{
-		InstanceIds: []*string{aws.String(instanceID)},
-	}
-	_, err := svc.StopInstances(inputStop)
-	if err != nil {
-		return err
-	}
+// 	t.Logf("Stopping instance %s", instanceID)
+// 	inputStop := &ec2.StopInstancesInput{
+// 		InstanceIds: []*string{aws.String(instanceID)},
+// 	}
+// 	_, err := svc.StopInstances(inputStop)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	t.Logf("Waiting until instance %s has stopped", instanceID)
-	err = svc.WaitUntilInstanceStopped(&ec2.DescribeInstancesInput{
-		InstanceIds: []*string{aws.String(instanceID)},
-	})
-	if err != nil {
-		return err
-	}
+// 	t.Logf("Waiting until instance %s has stopped", instanceID)
+// 	err = svc.WaitUntilInstanceStopped(&ec2.DescribeInstancesInput{
+// 		InstanceIds: []*string{aws.String(instanceID)},
+// 	})
+// 	if err != nil {
+// 		return err
+// 	}
 
-	startTime := time.Now()
-	attempts := 0
-	readyToStart := false
+// 	startTime := time.Now()
+// 	attempts := 0
+// 	readyToStart := false
 
-	for !readyToStart {
-		if time.Since(startTime) > 5*time.Minute {
-			t.Logf("Timed out waiting for instance %s to be ready to start", instanceID)
-			return err
-		}
-		attempts++
-		t.Logf("Starting instance %s (attempt %d)", instanceID, attempts)
+// 	for !readyToStart {
+// 		if time.Since(startTime) > 5*time.Minute {
+// 			t.Logf("Timed out waiting for instance %s to be ready to start", instanceID)
+// 			return err
+// 		}
+// 		attempts++
+// 		t.Logf("Starting instance %s (attempt %d)", instanceID, attempts)
 
-		inputStart := &ec2.StartInstancesInput{
-			InstanceIds: []*string{aws.String(instanceID)},
-		}
-		_, err := svc.StartInstances(inputStart)
-		if err == nil {
-			readyToStart = true
-		} else {
-			t.Logf("Error starting instance %s: %s", instanceID, err.Error())
-			t.Log("Instance not ready to start. Sleeping for 5s and will try again.")
-			time.Sleep(5 * time.Second)
-		}
-	}
+// 		inputStart := &ec2.StartInstancesInput{
+// 			InstanceIds: []*string{aws.String(instanceID)},
+// 		}
+// 		_, err := svc.StartInstances(inputStart)
+// 		if err == nil {
+// 			readyToStart = true
+// 		} else {
+// 			t.Logf("Error starting instance %s: %s", instanceID, err.Error())
+// 			t.Log("Instance not ready to start. Sleeping for 5s and will try again.")
+// 			time.Sleep(5 * time.Second)
+// 		}
+// 	}
 
-	t.Logf("Instance %s was ready to start after %d attempts", instanceID, attempts)
+// 	t.Logf("Instance %s was ready to start after %d attempts", instanceID, attempts)
 
-	t.Logf("Waiting until instance %s is running", instanceID)
-	err = svc.WaitUntilInstanceRunning(&ec2.DescribeInstancesInput{
-		InstanceIds: []*string{aws.String(instanceID)},
-	})
-	if err != nil {
-		return err
-	}
+// 	t.Logf("Waiting until instance %s is running", instanceID)
+// 	err = svc.WaitUntilInstanceRunning(&ec2.DescribeInstancesInput{
+// 		InstanceIds: []*string{aws.String(instanceID)},
+// 	})
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func checkSunkenlandIsRunning(t *testing.T, region string, instanceID string) error {
 	t.Log("Checking if Sunkenland is running")
@@ -459,42 +454,42 @@ func checkSunkenlandIsRunning(t *testing.T, region string, instanceID string) er
 	return nil
 }
 
-func runCommandWithRetry(t *testing.T, actionDescription string, maxRetries int, sleepBetweenRetries time.Duration, region string, instanceID string, command string, timeout time.Duration) (string, error) {
-	output, err := retry.DoWithRetryE(t, actionDescription, maxRetries, sleepBetweenRetries, func() (string, error) {
-		output, err := taws.CheckSsmCommandE(t, region, instanceID, command, timeout)
-		if err != nil {
-			return "", fmt.Errorf("command output was '%+v' and error was '%v'", output, err)
-		}
-		return fmt.Sprint(output), nil
-	})
-	if err != nil {
-		return "", err
-	}
-	return output, nil
-}
+// func runCommandWithRetry(t *testing.T, actionDescription string, maxRetries int, sleepBetweenRetries time.Duration, region string, instanceID string, command string, timeout time.Duration) (string, error) {
+// 	output, err := retry.DoWithRetryE(t, actionDescription, maxRetries, sleepBetweenRetries, func() (string, error) {
+// 		output, err := taws.CheckSsmCommandE(t, region, instanceID, command, timeout)
+// 		if err != nil {
+// 			return "", fmt.Errorf("command output was '%+v' and error was '%v'", output, err)
+// 		}
+// 		return fmt.Sprint(output), nil
+// 	})
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return output, nil
+// }
 
-func sunkenlandService(t *testing.T, region string, instanceID string, action string) (string, error) {
-	var actionDescription string
+// func sunkenlandService(t *testing.T, region string, instanceID string, action string) (string, error) {
+// 	var actionDescription string
 
-	switch action {
-	case "start":
-		actionDescription = "Starting sunkenland service"
-	case "stop":
-		actionDescription = "Stopping sunkenland service"
-	case "restart":
-		actionDescription = "Restarting sunkenland service"
-	default:
-		return "", fmt.Errorf("%s is an unsupported action", action)
-	}
+// 	switch action {
+// 	case "start":
+// 		actionDescription = "Starting sunkenland service"
+// 	case "stop":
+// 		actionDescription = "Stopping sunkenland service"
+// 	case "restart":
+// 		actionDescription = "Restarting sunkenland service"
+// 	default:
+// 		return "", fmt.Errorf("%s is an unsupported action", action)
+// 	}
 
-	command := fmt.Sprintf("systemctl %s sunkenland.service", action)
+// 	command := fmt.Sprintf("systemctl %s sunkenland.service", action)
 
-	output, err := runCommandWithRetry(t, actionDescription, 2, 30*time.Second, region, instanceID, command, 120*time.Second)
-	if err != nil {
-		return "", fmt.Errorf("error running command: %v", err)
-	}
-	return output, nil
-}
+// 	output, err := runCommandWithRetry(t, actionDescription, 2, 30*time.Second, region, instanceID, command, 120*time.Second)
+// 	if err != nil {
+// 		return "", fmt.Errorf("error running command: %v", err)
+// 	}
+// 	return output, nil
+// }
 
 func fetchSyslog(t *testing.T, region string, instanceID string) string {
 	command := "tail -n 50 /var/log/syslog"

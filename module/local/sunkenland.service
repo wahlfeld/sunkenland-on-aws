@@ -16,3 +16,4 @@ WorkingDirectory=${game_dir}
 ExecStartPre=/home/${host_username}/Steam/steamcmd.sh +force_install_dir ${game_dir} +login anonymous +@sSteamCmdForcePlatformType +app_update ${steam_app_id} validate +quit
 ExecStart=${game_dir}/bootstrap_sunkenland.sh
 KillSignal=SIGINT
+ExecStopPost=${game_dir}/backup_sunkenland.sh

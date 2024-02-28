@@ -117,8 +117,8 @@ resource "aws_s3_object" "start_sunkenland" {
     server_password   = var.server_password
     server_region     = var.server_region
     steam_app_id      = local.steam_app_id
-    world_guid        = local.world_guid
     world_folder_name = local.world_folder_name
+    world_guid        = local.world_guid
   }))
   etag = filemd5("${path.module}/local/start_sunkenland.sh")
 }
@@ -128,10 +128,11 @@ resource "aws_s3_object" "backup_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/backup_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/backup_sunkenland.sh", {
-    bucket        = aws_s3_bucket.sunkenland.id
-    game_dir      = local.game_dir
-    host_username = local.host_username
-    world_guid    = local.world_guid
+    bucket            = aws_s3_bucket.sunkenland.id
+    game_dir          = local.game_dir
+    host_username     = local.host_username
+    world_folder_name = local.world_folder_name
+    world_guid        = local.world_guid
   }))
   etag = filemd5("${path.module}/local/backup_sunkenland.sh")
 }
