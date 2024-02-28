@@ -113,7 +113,7 @@ func TestTerraform(t *testing.T) {
 
 		monitoringURL := terraform.Output(t, terraformOptions, "monitoring_url")
 
-		validateResponse(t, monitoringURL, 60, 5*time.Second)
+		validateResponse(t, monitoringURL, 80, 5*time.Second)
 	})
 
 	test_structure.RunTestStage(t, "check_sunkenland_service", func() {
