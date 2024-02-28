@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -127,6 +128,15 @@ func TestTerraform(t *testing.T) {
 
 		err := checkSunkenlandIsRunning(t, region, instanceID)
 		require.NoError(t, err, "sunkenland is not running. Error: %v", err)
+
+		t.Log("############")
+		t.Log("### PASS ###")
+		t.Log("############")
+
+		bucketID := terraform.Output(t, terraformOptions, "bucket_id")
+		t.Logf("Emptying and deleting bucket %s now, so that Terraform can destroy it", bucketID)
+		t.Log("Skipping syslog...")
+		os.Setenv("SKIP_logs", "true")
 	})
 
 	// test_structure.RunTestStage(t, "test_backup", func() {
@@ -223,13 +233,6 @@ func TestTerraform(t *testing.T) {
 	// 	require.NoError(t, err)
 
 	// 	t.Log("Log found")
-
-	// 	t.Log("############")
-	// 	t.Log("### PASS ###")
-	// 	t.Log("############")
-	// 	t.Logf("Emptying and deleting bucket %s now, so that Terraform can destroy it", bucketID)
-	// 	t.Log("Skipping syslog...")
-	// 	os.Setenv("SKIP_logs", "true")
 	// })
 }
 
