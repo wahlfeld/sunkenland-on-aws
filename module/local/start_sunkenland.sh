@@ -1,6 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
+echo "Syncing backup script"
+
+aws s3 cp s3://${bucket}/backup_sunkenland.sh ${game_dir}/backup_sunkenland.sh
+chmod +x ${game_dir}/backup_sunkenland.sh
+
+echo "Setting crontab"
+
+aws s3 cp s3://${bucket}/crontab ${game_dir}/crontab
+crontab < ${game_dir}/crontab
+
 # TODO: Is this important?
 # Sunkenland game (app) ID: https://steamdb.info/app/2080690/info/
 export SteamAppId=2080690
@@ -38,7 +48,7 @@ world_files=(
 )
 
 for file in "$${world_files[@]}"; do
-  local_file="$${WORLD_DIR/$${file}"
+  local_file="$${WORLD_DIR}/$${file}"
   s3_file="s3://${bucket}/$${file}"
   download_file "$${local_file}" "$${s3_file}"
 done

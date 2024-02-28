@@ -237,19 +237,13 @@ func deployUsingTerraform(t *testing.T, region string, workingDirectory string) 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: workingDirectory,
 		Vars: map[string]interface{}{
-			"aws_region":      region,
-			"instance_type":   "t3.medium",
-			"purpose":         "test",
-			"server_name":     "test-server",
-			"server_password": "test-password",
-			"sns_email":       "fake@email.com",
-			"unique_id":       uniqueID,
+			"aws_region":    region,
+			"instance_type": "t3.large",
+			"purpose":       "test",
+			"server_region": "asia",
+			"sns_email":     "fake@email.com",
+			"unique_id":     uniqueID,
 			// "world_name":      worldName,
-			"admins": map[string]interface{}{
-				fmt.Sprintf("%s-testuser1", uniqueID): 76561197993928956,
-				fmt.Sprintf("%s-testuser2", uniqueID): 76561197994340320,
-				fmt.Sprintf("%s-testuser3", uniqueID): "",
-			},
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION":  region,
@@ -417,15 +411,15 @@ func checkSunkenlandIsRunning(t *testing.T, region string, instanceID string) er
 			return "", fmt.Errorf("expected status to be '%s' but was '%s'", expectedStatus, actualStatus)
 		}
 
-		t.Log("sunkenland service is active")
+		t.Log("Sunkenland service is active")
 		return "", nil
 	})
 	if err != nil {
 		return err
 	}
 
-	_, err = retry.DoWithRetryE(t, "Checking if Sunkenland process is running", 100, 10*time.Second, func() (string, error) {
-		output, err := taws.CheckSsmCommandE(t, region, instanceID, "pgrep sunkenland_server", 30*time.Second)
+	_, err = retry.DoWithRetryE(t, "Checking if Sunkenland/Wine process is running", 100, 10*time.Second, func() (string, error) {
+		output, err := taws.CheckSsmCommandE(t, region, instanceID, "pgrep wine", 30*time.Second)
 		if err != nil {
 			t.Logf("Command output was '%+v' and error was '%v'", output, err)
 
@@ -444,13 +438,34 @@ func checkSunkenlandIsRunning(t *testing.T, region string, instanceID string) er
 		if pid == "" {
 			return "", fmt.Errorf("PID not found")
 		}
+
+		t.Log("Sunkenland/Wine process is running")
 		return "", nil
 	})
 	if err != nil {
 		return err
 	}
 
-	t.Log("sunkenland process is running")
+	_, err = retry.DoWithRetryE(t, "Checking for server start success log", 100, 10*time.Second, func() (string, error) {
+		logLineToCheck := "Server Start Complete, Ready for Clients to Join."
+		logFile := "/home/slserver/sunkenland/Worlds/sunkenland.log"
+		output, err := taws.CheckSsmCommandE(t, region, instanceID, fmt.Sprintf("grep '%s' %s", logLineToCheck, logFile), 30*time.Second)
+		if err != nil {
+			t.Logf("Command output was '%+v' and error was '%v'", output, err)
+			return "", handleErrorWithSyslog(t, region, instanceID, err)
+		}
+
+		if !strings.Contains(output.Stdout, logLineToCheck) {
+			return "", fmt.Errorf("log line '%s' not found in file %s", logLineToCheck, logFile)
+		}
+
+		t.Log("Sunkenland server has started")
+		return "", nil
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

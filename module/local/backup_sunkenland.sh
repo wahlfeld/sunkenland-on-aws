@@ -20,7 +20,7 @@ world_files=(
 )
 
 for file in "$${world_files[@]}"; do
-  local_file="$${WORLD_DIR/$${file}"
+  local_file="$${WORLD_DIR}/$${file}"
   s3_file="s3://${bucket}/backups/$${file}"
   backup_file "$${local_file}" "$${s3_file}"
 done
