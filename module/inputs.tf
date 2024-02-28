@@ -3,9 +3,8 @@ locals {
   game_dir          = "/home/${local.host_username}/sunkenland"
   name              = var.purpose != "prod" ? "sunkenland-${var.purpose}${var.unique_id}" : "sunkenland"
   steam_app_id      = "2667530"
-  world_name        = "template"                             # TODO: Validate if this name matters
   world_guid        = "8126a58f-b357-4606-8ae1-b6d4f57e8b32" # TODO: Validate if this name matters
-  world_folder_name = "${local.world_name}~${local.world_guid}"
+  world_folder_name = "${var.world_name}~${local.world_guid}"
 
   tags = {
     "Purpose"   = var.purpose
@@ -114,5 +113,9 @@ variable "unique_id" {
 }
 
 variable "world_description" {
+  type = string
+}
+
+variable "world_name" {
   type = string
 }

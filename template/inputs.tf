@@ -122,3 +122,9 @@ variable "world_description" {
   type    = string
   default = ""
 }
+
+variable "world_name" {
+  type        = string
+  description = "Name of the server shown in the Sunkenland server browser"
+  default     = "template"
+}

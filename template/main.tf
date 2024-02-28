@@ -25,4 +25,5 @@ module "main" {
   survival_difficulty       = var.survival_difficulty
   unique_id                 = var.unique_id
   world_description         = var.world_description
+  world_name                = var.world_name
 }
