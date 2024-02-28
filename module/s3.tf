@@ -111,14 +111,16 @@ resource "aws_s3_object" "start_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/start_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/start_sunkenland.sh", {
-    bucket            = aws_s3_bucket.sunkenland.id
-    game_dir          = local.game_dir
-    host_username     = local.host_username
-    server_password   = var.server_password
-    server_region     = var.server_region
-    steam_app_id      = local.steam_app_id
-    world_folder_name = local.world_folder_name
-    world_guid        = local.world_guid
+    bucket               = aws_s3_bucket.sunkenland.id
+    game_dir             = local.game_dir
+    host_username        = local.host_username
+    password             = var.server_password
+    region               = var.server_region
+    makeSessionInvisible = !var.session_visible
+    maxPlayerCapacity    = var.max_players
+    steam_app_id         = local.steam_app_id
+    world_folder_name    = local.world_folder_name
+    worldGuid            = local.world_guid
   }))
   etag = filemd5("${path.module}/local/start_sunkenland.sh")
 }
