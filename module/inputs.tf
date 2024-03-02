@@ -28,6 +28,10 @@ variable "aws_region" {
   type = string
 }
 
+variable "death_penalties" {
+  type = bool
+}
+
 variable "enemy_difficulty" {
   type = number
 }

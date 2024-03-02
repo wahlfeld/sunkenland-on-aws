@@ -165,12 +165,10 @@ resource "aws_s3_object" "sunkenland_service" {
 # TODO: Parameterise contents of these world files
 resource "aws_s3_object" "sunkenland_world" {
   #checkov:skip=CKV_AWS_186:KMS encryption is not necessary
-  bucket = aws_s3_bucket.sunkenland.id
-  key    = "/World.json"
-  content_base64 = base64encode(templatefile("${path.module}/local/World.json", {
-    ApplicationVersion = var.application_version
-  }))
-  etag = filemd5("${path.module}/local/World.json")
+  bucket         = aws_s3_bucket.sunkenland.id
+  key            = "/World.json"
+  content_base64 = base64encode(file("${path.module}/local/World.json"))
+  etag           = filemd5("${path.module}/local/World.json")
 }
 
 # TODO: Parameterise contents of these world files
@@ -192,12 +190,12 @@ resource "aws_s3_object" "sunkenland_world_setting" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/WorldSetting.json"
   content_base64 = base64encode(templatefile("${path.module}/local/WorldSetting.json", {
-    ApplicationVersion        = var.application_version
     worldDescription          = var.world_description
     enemyDifficulty           = var.enemy_difficulty
     enemyGarrisonDifficulty   = var.enemy_garrison_difficulty
     enemyRaidDifficulty       = var.enemy_raid_difficulty
     survivalDifficulty        = var.survival_difficulty
+    isDeathPenaltiesEnabled   = var.death_penalties
     isFriendlyFireEnabled     = var.friendly_fire
     isResearchShared          = var.research_shared
     isMapShared               = var.map_shared

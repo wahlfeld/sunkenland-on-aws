@@ -1,24 +1,25 @@
 {
-	"ApplicationVersion" : {
-		"__type" : "string",
-		"value" : "${ApplicationVersion}"
+	"ApplicationVersion": {
+		"__type": "string",
+		"value": "0.2.10"
 	},
-	"WorldSettingProfile" : {
-		"__type" : "WorldSettingProfile,Assembly-CSharp",
-		"value" : {
-			"worldDescription" : "${worldDescription}",
-			"enemyDifficulty" : ${enemyDifficulty},
-			"enemyGarrisonDifficulty" : ${enemyGarrisonDifficulty},
-			"enemyRaidDifficulty" : ${enemyRaidDifficulty},
-			"survivalDifficulty" : ${survivalDifficulty},
-			"isFriendlyFireEnabled" : ${isFriendlyFireEnabled},
-			"isResearchShared" : ${isResearchShared},
-			"isMapShared" : ${isMapShared},
-			"isFlagShared" : ${isFlagShared},
-			"isSpawnPointShared" : ${isSpawnPointShared},
-			"isUsingRandomSpawnPoints" : ${isUsingRandomSpawnPoints},
-			"respawnTime" : ${respawnTime},
-			"lootRespawnIntervalInDays" ${lootRespawnIntervalInDays}
+	"WorldSettingProfile": {
+		"__type": "WorldSettingProfile,Assembly-CSharp",
+		"value": {
+			"worldDescription": "${worldDescription}",
+			"enemyDifficulty": ${enemyDifficulty},
+			"enemyGarrisonDifficulty": ${enemyGarrisonDifficulty},
+			"enemyRaidDifficulty": ${enemyRaidDifficulty},
+			"survivalDifficulty": ${survivalDifficulty},
+			"isDeathPenaltiesEnabled": ${isDeathPenaltiesEnabled},
+			"isFriendlyFireEnabled": ${isFriendlyFireEnabled},
+			"isResearchShared": ${isResearchShared},
+			"isMapShared": ${isMapShared},
+			"isFlagShared": ${isFlagShared},
+			"isSpawnPointShared": ${isSpawnPointShared},
+			"isUsingRandomSpawnPoints": ${isUsingRandomSpawnPoints},
+			"respawnTime": ${respawnTime},
+			"lootRespawnIntervalInDays": ${lootRespawnIntervalInDays}
 		}
 	}
 }

@@ -1,2 +1,2 @@
-@reboot sleep 300 && ${game_dir}/backup_sunkenland.sh &>> ${game_dir}/backup.log
-@hourly ${game_dir}/backup_sunkenland.sh &>> ${game_dir}/backup.log
+@reboot sleep 300 && ${game_dir}/backup_sunkenland.sh 2>&1 &>> ${game_dir}/backup.log
+@hourly ${game_dir}/backup_sunkenland.sh 2>&1 &>> ${game_dir}/backup.log

@@ -8,6 +8,11 @@ variable "aws_region" {
   description = "The AWS region to create the Sunkenland server"
 }
 
+variable "death_penalties" {
+  type    = bool
+  default = true
+}
+
 variable "enemy_difficulty" {
   type    = number
   default = 1
