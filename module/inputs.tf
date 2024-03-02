@@ -62,6 +62,10 @@ variable "map_shared" {
 
 variable "max_players" {
   type = number
+  validation {
+    condition     = var.max_players >= 3 && var.max_players <= 15
+    error_message = "'max_players' must be between 3 and 15 (inclusive)."
+  }
 }
 
 variable "purpose" {
@@ -86,6 +90,10 @@ variable "s3_lifecycle_expiration" {
 
 variable "server_password" {
   type = string
+  validation {
+    condition     = length(var.server_password) <= 8
+    error_message = "The 'server_password' must be a maximum of 8 characters long."
+  }
 }
 
 variable "server_region" {

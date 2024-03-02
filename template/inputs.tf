@@ -89,6 +89,7 @@ variable "server_password" {
 
 variable "server_region" {
   type        = string
+  default     = "asia"
   description = "The region to host the Sunkenland server"
 }
 
