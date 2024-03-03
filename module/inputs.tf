@@ -20,12 +20,12 @@ locals {
   )
 }
 
-variable "application_version" {
+variable "aws_region" {
   type = string
 }
 
-variable "aws_region" {
-  type = string
+variable "death_penalties" {
+  type = bool
 }
 
 variable "enemy_difficulty" {

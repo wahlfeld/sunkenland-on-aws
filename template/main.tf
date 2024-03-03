@@ -1,8 +1,8 @@
 module "main" {
   source = "../module"
 
-  application_version       = var.application_version
   aws_region                = var.aws_region
+  death_penalties           = var.death_penalties
   enemy_difficulty          = var.enemy_difficulty
   enemy_garrison_difficulty = var.enemy_garrison_difficulty
   enemy_raid_difficulty     = var.enemy_raid_difficulty

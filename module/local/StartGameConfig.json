@@ -1,11 +1,11 @@
 {
-	"StartGameConfig" : {
-		"__type" : "StartGameConfig,Assembly-CSharp",
-		"value" : {
-			"regionIndex" : 0,
-			"isSessionVisible" : ${isSessionVisible},
-			"serverPassword" : "${serverPassword}",
-			"maxPlayerCapacity" : ${maxPlayerCapacity}
+	"StartGameConfig": {
+		"__type": "StartGameConfig,Assembly-CSharp",
+		"value": {
+			"regionIndex": 0,
+			"isSessionVisible": ${isSessionVisible},
+			"serverPassword": "${serverPassword}",
+			"maxPlayerCapacity": ${maxPlayerCapacity}
 		}
 	}
 }
