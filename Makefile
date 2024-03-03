@@ -1,4 +1,3 @@
-# Variables for common commands
 DOCKER_COMPOSE_RUN := docker-compose run --rm
 
 .PHONY: .phony

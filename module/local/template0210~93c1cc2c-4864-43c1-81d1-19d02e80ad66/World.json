@@ -587,19 +587,19 @@
 	"DestroyedObjects" : {
 		"__type" : "System.Collections.Generic.List`1[[System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],mscorlib",
 		"value" : [
-		
+
 	]
 	},
 	"LearnedItems" : {
 		"__type" : "System.Collections.Generic.List`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],mscorlib",
 		"value" : [
-		
+
 	]
 	},
 	"UnlockItems" : {
 		"__type" : "System.Collections.Generic.List`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],mscorlib",
 		"value" : [
-		
+
 	]
 	},
 	"ResearchLevel" : {
@@ -609,19 +609,19 @@
 	"DiscardItems" : {
 		"__type" : "System.Collections.Generic.List`1[[DiscardedItemData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]],mscorlib",
 		"value" : [
-		
+
 	]
 	},
 	"DropBags" : {
 		"__type" : "System.Collections.Generic.List`1[[DroppedBagData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]],mscorlib",
 		"value" : [
-		
+
 	]
 	},
 	"Collectables" : {
 		"__type" : "System.Collections.Generic.List`1[[CollectableData, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]],mscorlib",
 		"value" : [
-		
+
 	]
 	},
 	"WorldLocations" : {
@@ -775,7 +775,7 @@
 	"Holders" : {
 		"__type" : "System.Collections.Generic.List`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]],mscorlib",
 		"value" : [
-		
+
 	]
 	}
 }

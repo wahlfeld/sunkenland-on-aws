@@ -1,8 +1,3 @@
-variable "application_version" {
-  type    = string
-  default = "0.2.03"
-}
-
 variable "aws_region" {
   type        = string
   description = "The AWS region to create the Sunkenland server"

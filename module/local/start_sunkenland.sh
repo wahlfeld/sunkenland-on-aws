@@ -11,10 +11,6 @@ echo "Setting crontab"
 aws s3 cp s3://${bucket}/crontab ${game_dir}/crontab
 crontab < ${game_dir}/crontab
 
-# TODO: Is this important?
-# Sunkenland game (app) ID: https://steamdb.info/app/2080690/info/
-export SteamAppId=2080690
-
 echo "Reset Wine environment and initialize"
 rm -rf /home/${host_username}/.wine
 wineboot --init
@@ -23,8 +19,7 @@ SLEEP=15
 echo "Wait for Wine initialization. Sleeping for $${SLEEP} seconds..."
 sleep "$${SLEEP}"
 
-# TODO: Test is xvfb is required
-echo "Starting xvfb (may not be required)"
+echo "Starting xvfb"
 Xvfb :1 &
 export DISPLAY=:1
 

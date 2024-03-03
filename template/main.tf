@@ -1,7 +1,6 @@
 module "main" {
   source = "../module"
 
-  application_version       = var.application_version
   aws_region                = var.aws_region
   death_penalties           = var.death_penalties
   enemy_difficulty          = var.enemy_difficulty
