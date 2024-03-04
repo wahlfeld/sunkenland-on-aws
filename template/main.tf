@@ -1,6 +1,7 @@
 module "main" {
   source = "../module"
 
+  auto_update_server        = var.auto_update_server
   aws_region                = var.aws_region
   death_penalties           = var.death_penalties
   enemy_difficulty          = var.enemy_difficulty

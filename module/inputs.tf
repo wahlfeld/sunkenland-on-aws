@@ -6,6 +6,16 @@ locals {
   world_guid        = "8126a58f-b357-4606-8ae1-b6d4f57e8b32" # TODO: Validate if this name matters
   world_folder_name = "${var.world_name}~${local.world_guid}"
 
+  install_update_cmd = <<EOT
+/home/${local.host_username}/Steam/steamcmd.sh \
+    +force_install_dir ${local.game_dir} \
+    +login anonymous \
+    +@sSteamCmdForcePlatformType windows \
+    +app_update ${local.steam_app_id} \
+    validate \
+    +quit
+EOT
+
   tags = {
     "Purpose"   = var.purpose
     "Component" = "Sunkenland Server"
@@ -18,6 +28,10 @@ locals {
       "Description" = "Instance running a Sunkenland server"
     }
   )
+}
+
+variable "auto_update_server" {
+  type = bool
 }
 
 variable "aws_region" {

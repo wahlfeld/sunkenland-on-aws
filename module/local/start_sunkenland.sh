@@ -11,6 +11,11 @@ echo "Setting crontab"
 aws s3 cp s3://${bucket}/crontab ${game_dir}/crontab
 crontab < ${game_dir}/crontab
 
+%{ if auto_update_server }
+echo "Checking for Sunkenland updates"
+${install_update_cmd}
+%{ endif }
+
 echo "Reset Wine environment and initialize"
 rm -rf /home/${host_username}/.wine
 wineboot --init
