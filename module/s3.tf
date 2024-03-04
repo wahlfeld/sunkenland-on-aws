@@ -87,9 +87,10 @@ resource "aws_s3_object" "install_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/install_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/install_sunkenland.sh", {
-    game_dir      = local.game_dir
-    host_username = local.host_username
-    steam_app_id  = local.steam_app_id
+    game_dir           = local.game_dir
+    host_username      = local.host_username
+    install_update_cmd = local.install_update_cmd
+    steam_app_id       = local.steam_app_id
   }))
   etag = filemd5("${path.module}/local/install_sunkenland.sh")
 }
@@ -111,9 +112,11 @@ resource "aws_s3_object" "start_sunkenland" {
   bucket = aws_s3_bucket.sunkenland.id
   key    = "/start_sunkenland.sh"
   content_base64 = base64encode(templatefile("${path.module}/local/start_sunkenland.sh", {
+    auto_update_server   = var.auto_update_server
     bucket               = aws_s3_bucket.sunkenland.id
     game_dir             = local.game_dir
     host_username        = local.host_username
+    install_update_cmd   = local.install_update_cmd
     password             = var.server_password
     region               = var.server_region
     makeSessionInvisible = !var.session_visible

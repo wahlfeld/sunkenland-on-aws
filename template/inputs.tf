@@ -1,3 +1,8 @@
+variable "auto_update_server" {
+  type    = bool
+  default = true
+}
+
 variable "aws_region" {
   type        = string
   description = "The AWS region to create the Sunkenland server"
