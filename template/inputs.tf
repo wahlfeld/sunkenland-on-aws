@@ -86,10 +86,30 @@ variable "s3_lifecycle_expiration" {
   description = "The number of days to keep files (backups) in the S3 bucket before deletion"
 }
 
+variable "server_local_address" {
+  type    = string
+  default = null
+}
+
+variable "server_local_port" {
+  type    = number
+  default = null
+}
+
 variable "server_password" {
   type        = string
   default     = ""
   description = "The server password"
+}
+
+variable "server_public_address" {
+  type    = string
+  default = null
+}
+
+variable "server_public_port" {
+  type    = number
+  default = null
 }
 
 variable "server_region" {
@@ -127,6 +147,11 @@ variable "unique_id" {
 variable "world_description" {
   type    = string
   default = ""
+}
+
+variable "world_guid" {
+  type    = string
+  default = "93c1cc2c-4864-43c1-81d1-19d02e80ad66"
 }
 
 variable "world_name" {
