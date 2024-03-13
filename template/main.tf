@@ -18,7 +18,11 @@ module "main" {
   research_shared           = var.research_shared
   respawn_time              = var.respawn_time
   s3_lifecycle_expiration   = var.s3_lifecycle_expiration
+  server_local_address      = var.server_local_address
+  server_local_port         = var.server_local_port
   server_password           = var.server_password
+  server_public_address     = var.server_public_address
+  server_public_port        = var.server_public_port
   server_region             = var.server_region
   session_visible           = var.session_visible
   sns_email                 = var.sns_email
@@ -26,5 +30,6 @@ module "main" {
   survival_difficulty       = var.survival_difficulty
   unique_id                 = var.unique_id
   world_description         = var.world_description
+  world_guid                = var.world_guid
   world_name                = var.world_name
 }

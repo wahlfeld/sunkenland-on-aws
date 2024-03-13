@@ -3,8 +3,7 @@ locals {
   game_dir          = "/home/${local.host_username}/sunkenland"
   name              = var.purpose != "prod" ? "sunkenland-${var.purpose}${var.unique_id}" : "sunkenland"
   steam_app_id      = "2667530"
-  world_guid        = "8126a58f-b357-4606-8ae1-b6d4f57e8b32" # TODO: Validate if this name matters
-  world_folder_name = "${var.world_name}~${local.world_guid}"
+  world_folder_name = "${var.world_name}~${var.world_guid}"
 
   install_update_cmd = <<EOT
 /home/${local.host_username}/Steam/steamcmd.sh \
@@ -15,6 +14,29 @@ locals {
     validate \
     +quit
 EOT
+
+  start_server_cmd = "wine ${local.game_dir}/Sunkenland-DedicatedServer.exe"
+  args = [
+    "-batchmode",
+    "-nographics",
+    "-logFile ${local.game_dir}/Worlds/sunkenland.log",
+    "-maxPlayerCapacity ${var.max_players}",
+    "-password ${var.server_password}",
+    "-region ${var.server_region}",
+    "-worldGuid ${var.world_guid}",
+  ]
+
+  start_server_cmd_with_args = "${local.start_server_cmd} ${join(" ", local.args)}"
+
+  optional_args = concat(
+    var.session_visible ? [] : ["-makeSessionInvisible"],
+    var.server_local_port != null ? ["-port ${var.server_local_port}"] : [],
+    var.server_public_port != null ? ["-publicPort ${var.server_public_port}"] : [],
+    var.server_local_address != null ? ["-ip ${var.server_local_address}"] : [],
+    var.server_public_address != null ? ["-publicIP ${var.server_public_address}"] : [],
+  )
+
+  start_server_cmd_with_optional_args = "${local.start_server_cmd_with_args} ${join(" ", local.optional_args)}"
 
   tags = {
     "Purpose"   = var.purpose
@@ -102,12 +124,28 @@ variable "s3_lifecycle_expiration" {
   type = string
 }
 
+variable "server_local_address" {
+  type = string
+}
+
+variable "server_local_port" {
+  type = number
+}
+
 variable "server_password" {
   type = string
   validation {
     condition     = length(var.server_password) <= 8
     error_message = "The 'server_password' must be a maximum of 8 characters long."
   }
+}
+
+variable "server_public_address" {
+  type = string
+}
+
+variable "server_public_port" {
+  type = number
 }
 
 variable "server_region" {
@@ -135,6 +173,10 @@ variable "unique_id" {
 }
 
 variable "world_description" {
+  type = string
+}
+
+variable "world_guid" {
   type = string
 }
 

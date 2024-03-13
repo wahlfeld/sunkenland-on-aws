@@ -60,12 +60,4 @@ ln -sfn ${game_dir}/Worlds/ /home/${host_username}/.wine/drive_c/users/${host_us
 echo "Starting server PRESS CTRL-C to exit"
 
 # Start the Sunkenland server
-wine ${game_dir}/Sunkenland-DedicatedServer.exe \
-  -batchmode \
-  -nographics \
-  -logFile ${game_dir}/Worlds/sunkenland.log \
-  -maxPlayerCapacity "${maxPlayerCapacity}" \
-  -password "${password}" \
-  -region "${region}" \
-  -worldGuid "${worldGuid}" \
-%{ if makeSessionInvisible }  -makeSessionInvisible \ %{ endif }
+${start_server_cmd}
